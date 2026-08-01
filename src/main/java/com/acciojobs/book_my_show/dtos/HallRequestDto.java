@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class HallRequestDto {
     private String hallName;
     private String rowRange; // A-G
-    private String seatCapacityPerRow;
+    private int seatCapacityPerRow;
 }

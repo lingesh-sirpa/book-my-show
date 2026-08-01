@@ -1,11 +1,10 @@
 package com.acciojobs.book_my_show.services;
 
+import com.acciojobs.book_my_show.dtos.SeatStatusResponse;
 import com.acciojobs.book_my_show.dtos.ShowRequestDto;
 import com.acciojobs.book_my_show.exceptions.UnAuthorizedException;
-import com.acciojobs.book_my_show.models.Hall;
-import com.acciojobs.book_my_show.models.Show;
-import com.acciojobs.book_my_show.models.Theater;
-import com.acciojobs.book_my_show.models.User;
+import com.acciojobs.book_my_show.models.*;
+import com.acciojobs.book_my_show.repositories.BookedSeatRepository;
 import com.acciojobs.book_my_show.repositories.ShowRepository;
 import com.acciojobs.book_my_show.transformers.ApplicationTransformer;
 import com.acciojobs.book_my_show.utilitis.SystemUtility;
@@ -27,16 +26,19 @@ public class ShowService {
     private HallService hallService;
     private ShowRepository showRepository;
     private ApplicationTransformer applicationTransformer;
+    private BookedSeatRepository bookedSeatRepository;
 
     @Autowired
     public ShowService(UserService userService,
                        HallService hallService,
                        ShowRepository showRepository,
-                       ApplicationTransformer applicationTransformer){
+                       ApplicationTransformer applicationTransformer,
+                       BookedSeatRepository bookedSeatRepository){
         this.userService = userService;
         this.hallService = hallService;
         this.showRepository = showRepository;
         this.applicationTransformer = applicationTransformer;
+        this.bookedSeatRepository = bookedSeatRepository;
     }
 
     public boolean isOverLappingShow(List<Show> shows, Long startTime, Long endTime){
@@ -93,5 +95,36 @@ public class ShowService {
 
         return showsFilteredByCity;
     }
+
+    public List<SeatStatusResponse> fetchSeatStatusByShowId(UUID showId) {
+        Show show = showRepository.findById(showId).orElse(null);
+        Hall hall = show.getHall();
+        String rowRange = hall.getRowRange();
+        int rowCapacity = hall.getSeatCapacity();
+        String[] rowArr = rowRange.split("-");
+        char stRange = rowArr[0].charAt(0);
+        char enRange = rowArr[1].charAt(0);
+
+        List<SeatStatusResponse> seatStatusResponses = new ArrayList<>();
+        for(char ch = stRange; ch <= enRange; ch++){
+            for(int i = 1; i <= rowCapacity; i++){
+                String seatId = ch + "" + i;
+                BookedSeat bookedSeat = bookedSeatRepository.isSeatBooked(seatId, show.getSysId());
+                SeatStatusResponse seatStatusResponse = new SeatStatusResponse();
+                seatStatusResponse.setSeatId(seatId);
+                seatStatusResponse.setShow(show);
+                if(bookedSeat == null){
+                    seatStatusResponse.setSeatstatus("UNBOOKED");
+                }else{
+                    seatStatusResponse.setSeatstatus("BOOKED");
+                }
+
+                seatStatusResponses.add(seatStatusResponse);
+            }
+        }
+
+        return seatStatusResponses;
+    }
+
 
 }

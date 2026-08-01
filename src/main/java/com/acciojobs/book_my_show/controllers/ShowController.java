@@ -59,5 +59,10 @@ public class ShowController {
         return new ResponseEntity(shows, HttpStatus.OK);
     }
 
+    @GetMapping("/seat-status")
+    public ResponseEntity getShowSeatStatus(@RequestParam UUID showId){
+        return new ResponseEntity(showService.fetchSeatStatusByShowId(showId), HttpStatus.OK);
+    }
+
 
 }

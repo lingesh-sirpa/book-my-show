@@ -24,7 +24,7 @@ public class Hall {
     private String hallId;
     private String hallName;
     private String rowRange; // A-G
-    private String seatCapacity;
+    private Integer seatCapacity;
     @ManyToOne
     private Theater theater;
     private LocalDateTime createdAt;
