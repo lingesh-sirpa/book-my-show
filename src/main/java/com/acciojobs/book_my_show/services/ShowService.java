@@ -1,8 +1,10 @@
 package com.acciojobs.book_my_show.services;
 
+import com.acciojobs.book_my_show.dtos.BookSeatDto;
 import com.acciojobs.book_my_show.dtos.SeatStatusResponse;
 import com.acciojobs.book_my_show.dtos.ShowRequestDto;
 import com.acciojobs.book_my_show.exceptions.UnAuthorizedException;
+import com.acciojobs.book_my_show.exceptions.UserNotFoundException;
 import com.acciojobs.book_my_show.models.*;
 import com.acciojobs.book_my_show.repositories.BookedSeatRepository;
 import com.acciojobs.book_my_show.repositories.ShowRepository;
@@ -11,17 +13,15 @@ import com.acciojobs.book_my_show.utilitis.SystemUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.ShortBufferException;
 import javax.naming.directory.InvalidAttributesException;
+import java.awt.print.Book;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ShowService {
 
+    private EmailService emailService;
     private UserService userService;
     private HallService hallService;
     private ShowRepository showRepository;
@@ -33,12 +33,14 @@ public class ShowService {
                        HallService hallService,
                        ShowRepository showRepository,
                        ApplicationTransformer applicationTransformer,
+                       EmailService emailService,
                        BookedSeatRepository bookedSeatRepository){
         this.userService = userService;
         this.hallService = hallService;
         this.showRepository = showRepository;
         this.applicationTransformer = applicationTransformer;
         this.bookedSeatRepository = bookedSeatRepository;
+        this.emailService = emailService;
     }
 
     public boolean isOverLappingShow(List<Show> shows, Long startTime, Long endTime){
@@ -126,5 +128,46 @@ public class ShowService {
         return seatStatusResponses;
     }
 
+    public BookedSeat bookThisSeat(UUID userId, UUID showId, BookSeatDto bookSeatDto) throws InvalidAttributesException {
+        User user = userService.verifyUser(userId);
+        Show show = showRepository.findById(showId).orElse(null);
+        if(show == null){
+            throw new InvalidAttributesException("Invalid ShowId");
+        }
+        Hall hall = show.getHall();
+        String rowRange = hall.getRowRange();
+        int rowCapacity = hall.getSeatCapacity();
+        String[] rowArr = rowRange.split("-");
+        char startRow = rowArr[0].charAt(0);
+        char endRow = rowArr[1].charAt(0);
+
+        String seatId = bookSeatDto.getSeatId();
+        char seatRow = seatId.charAt(0);
+        int seatNum;
+
+        try{
+            seatNum = Integer.parseInt(seatId.substring(1));
+        }catch (NumberFormatException e){
+            throw new InvalidAttributesException("Invalid SeatId");
+        }
+
+        if(seatRow < startRow || seatRow > endRow){
+            throw new InvalidAttributesException("Invalid SeatRow");
+        }
+
+        if(seatNum < 1 || seatNum > rowCapacity){
+            throw new InvalidAttributesException("Invalid SeatNum");
+        }
+
+        BookedSeat bookSeat = bookedSeatRepository.isSeatBooked(seatId, showId);
+        if(bookSeat != null){
+            throw new IllegalArgumentException("Seat " + seatId + " is already booked");
+        }
+
+        BookedSeat bookedSeat = applicationTransformer.tranformUnbookToBook(user, show, seatId);
+        emailService.sendBookingConfirmationEmail(user, show, bookedSeat);
+        bookedSeatRepository.save(bookedSeat);
+        return bookedSeat;
+    }
 
 }

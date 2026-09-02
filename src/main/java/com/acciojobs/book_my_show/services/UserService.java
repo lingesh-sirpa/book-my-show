@@ -50,5 +50,15 @@ public class UserService {
         return user.get();
     }
 
+    public User verifyUser(UUID userId) throws InvalidAttributesException {
+        Optional<User> user =  userRepository.findById(userId);
+        if(user.isEmpty()){
+            throw new UserNotFoundException("User does not exist");
+        }
+        if(!user.get().getUserType().equals(UserType.CUSTOMER.toString())){
+            throw new InvalidAttributesException("Invalid Id passed");
+        }
+        return user.get();
+    }
 
 }

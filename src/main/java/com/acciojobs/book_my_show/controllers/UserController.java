@@ -38,4 +38,5 @@ public class UserController {
         User user = userService.registerOwner(userRequestDto);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
+
 }

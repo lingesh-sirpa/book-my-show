@@ -1,19 +1,13 @@
 package com.acciojobs.book_my_show.transformers;
 
-import com.acciojobs.book_my_show.dtos.HallRequestDto;
-import com.acciojobs.book_my_show.dtos.ShowRequestDto;
-import com.acciojobs.book_my_show.dtos.TheaterRequestDto;
-import com.acciojobs.book_my_show.dtos.UserRequestDto;
-import com.acciojobs.book_my_show.models.Hall;
-import com.acciojobs.book_my_show.models.Show;
-import com.acciojobs.book_my_show.models.Theater;
-import com.acciojobs.book_my_show.models.User;
-import com.acciojobs.book_my_show.services.HallService;
+import com.acciojobs.book_my_show.dtos.*;
+import com.acciojobs.book_my_show.models.*;
 import com.acciojobs.book_my_show.utilitis.SystemUtility;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.UUID;
 
 @Component
 public class ApplicationTransformer {
@@ -87,6 +81,19 @@ public class ApplicationTransformer {
                 .updatedBy(user.getEmail())
                 .updatedAt(LocalDateTime.now())
                 .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    public BookedSeat tranformUnbookToBook(User user, Show show, String seatId){
+        return BookedSeat.builder()
+                .bookingId(UUID.randomUUID().toString())
+                .seatId(seatId)
+                .show(show)
+                .seatStatus("BOOKED")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .createdBy(user.getUserId())
+                .updatedBy(user.getUserId())
                 .build();
     }
 

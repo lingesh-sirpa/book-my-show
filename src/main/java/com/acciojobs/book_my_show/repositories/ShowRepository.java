@@ -18,4 +18,5 @@ public interface ShowRepository extends JpaRepository<Show, UUID> {
     public List<Show> findByHall(Hall hall);
 
     public List<Show> findByMovieName(String name);
+
 }

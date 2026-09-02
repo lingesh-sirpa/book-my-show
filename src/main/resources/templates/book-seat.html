@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Booking Confirmation</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #e50914;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .success {
+            text-align: center;
+            color: #28a745;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .details {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .value {
+            color: #222;
+        }
+
+        .seat {
+            color: #e50914;
+            font-weight: bold;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .footer {
+            background-color: #f8f8f8;
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 13px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Booking Confirmed </h1>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+        <div class="success">
+            Your seat has been successfully booked!
+        </div>
+
+        <p>
+            Hello <strong th:text="${customerName}">Customer</strong>,
+        </p>
+
+        <p>
+            Thank you for booking your movie ticket with us.
+            Here are your booking details:
+        </p>
+
+        <!-- Customer Information -->
+        <div class="details">
+
+            <div class="row">
+    <span class="label">
+        Customer Name : <span th:text="${customerName}">Customer</span>
+    </span>
+            </div>
+
+            <!-- Customer Information -->
+
+            <div class="row">
+    <span class="label">
+        Email : <span th:text="${customerEmail}">customer@example.com</span>
+    </span>
+            </div>
+
+            <!-- Booking Information -->
+
+            <div class="row">
+    <span class="label">
+        Booking ID : <span th:text="${bookingId}">BMS001</span>
+    </span>
+            </div>
+
+            <div class="row">
+    <span class="label">
+        Seat ID : <span class="seat" th:text="${seatId}">A1</span>
+    </span>
+            </div>
+
+            <!-- Movie Information -->
+
+            <div class="row">
+    <span class="label">
+        Movie : <span th:text="${movieName}">Movie Name</span>
+    </span>
+            </div>
+
+            <div class="row">
+    <span class="label">
+        Show Price : <span class="price" th:text="${showPrice}">250</span>
+    </span>
+            </div>
+
+            <div class="row">
+    <span class="label">
+        Start Time : <span th:text="${startTime}">07:00 PM</span>
+    </span>
+            </div>
+
+            <div class="row">
+    <span class="label">
+        End Time : <span th:text="${endTime}">10:00 PM</span>
+    </span>
+            </div>
+
+        </div>
+
+        <p style="margin-top: 25px;">
+            Please keep this email for your booking reference.
+        </p>
+
+        <p>
+            Enjoy your movie! 🍿
+        </p>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Thank you for choosing Book My Show.</p>
+        <p>This is an automatically generated email. Please do not reply.</p>
+    </div>
+
+</div>
+
+</body>
+
+</html>

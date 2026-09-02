@@ -1,7 +1,9 @@
 package com.acciojobs.book_my_show.controllers;
 
+import com.acciojobs.book_my_show.dtos.BookSeatDto;
 import com.acciojobs.book_my_show.dtos.ShowRequestDto;
 import com.acciojobs.book_my_show.exceptions.UnAuthorizedException;
+import com.acciojobs.book_my_show.models.BookedSeat;
 import com.acciojobs.book_my_show.models.Show;
 import com.acciojobs.book_my_show.services.ShowService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.directory.InvalidAttributesException;
+import java.awt.print.Book;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -62,6 +65,22 @@ public class ShowController {
     @GetMapping("/seat-status")
     public ResponseEntity getShowSeatStatus(@RequestParam UUID showId){
         return new ResponseEntity(showService.fetchSeatStatusByShowId(showId), HttpStatus.OK);
+    }
+
+    @PostMapping("/book-seat")
+    public ResponseEntity bookSeat(@RequestParam UUID userId,
+                                   @RequestParam UUID showId,
+                                   @RequestBody BookSeatDto bookSeatDto
+                                   ){
+
+         HashMap<String, String> response = new HashMap<>();
+         try{
+             BookedSeat bookedSeat = showService.bookThisSeat(userId, showId, bookSeatDto);
+             return new ResponseEntity(bookedSeat, HttpStatus.CREATED);
+         }catch(Exception e){
+              response.put("message", e.getMessage());
+              return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+         }
     }
 
 
